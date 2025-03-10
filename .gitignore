@@ -21,6 +21,7 @@
 build/
 bin/
 lib/
+cmake-build-*/
 
 # IDE artifacts
 .vscode/

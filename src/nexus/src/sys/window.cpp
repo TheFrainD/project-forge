@@ -3,13 +3,14 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
+#include "nexus/assert.h"
 #include "nexus/sys/log.h"
 
 namespace nx::sys {
 
 struct WindowSubsystem {
     GLFWwindow *window {nullptr};
-    math::Dimensions<int> dimensions;
+    math::Dimensions<int> dimensions {};
     std::string title;
 
     bool initialized {false};
@@ -18,6 +19,9 @@ struct WindowSubsystem {
 static WindowSubsystem g_window_subsystem;
 
 outcome::Error WindowInit(const WindowSettings &settings) {
+    ASSERT_MSG(g_window_subsystem.initialized == false,
+               "Window subsystem already initialized");
+
     if (g_window_subsystem.initialized) {
         return outcome::CreateError(WindowErrorCode::kAlreadyInitialized);
     }
@@ -50,12 +54,17 @@ outcome::Error WindowInit(const WindowSettings &settings) {
         return outcome::CreateError(WindowErrorCode::kFailedToCreateGLFWWindow);
     }
 
-    glfwSetFramebufferSizeCallback(g_window_subsystem.window, [](GLFWwindow *, int width, int height) {
-        glViewport(0, 0, width, height);
-    });
+    glfwSetFramebufferSizeCallback(
+        g_window_subsystem.window,
+        [](GLFWwindow *, const int width, const int height) {
+            glViewport(0, 0, width, height);
+        });
 
-    glfwSetWindowSizeCallback(g_window_subsystem.window, [](GLFWwindow *window, int width, int height) {
-        WindowSubsystem *subsystem = static_cast<WindowSubsystem *>(glfwGetWindowUserPointer(window));
+    glfwSetWindowSizeCallback(g_window_subsystem.window, [](GLFWwindow *window,
+                                                            const int width,
+                                                            const int height) {
+        auto *subsystem =
+            static_cast<WindowSubsystem *>(glfwGetWindowUserPointer(window));
         subsystem->dimensions.width  = width;
         subsystem->dimensions.height = height;
     });
@@ -64,7 +73,7 @@ outcome::Error WindowInit(const WindowSettings &settings) {
     glfwMakeContextCurrent(g_window_subsystem.window);
     glfwSwapInterval(1);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
         glfwDestroyWindow(g_window_subsystem.window);
         g_window_subsystem.window = nullptr;
         glfwTerminate();
@@ -72,8 +81,11 @@ outcome::Error WindowInit(const WindowSettings &settings) {
     }
 
     math::Dimensions<int> framebuffer_dimensions;
-    glfwGetFramebufferSize(g_window_subsystem.window, &framebuffer_dimensions.width, &framebuffer_dimensions.height);
-    glViewport(0, 0, framebuffer_dimensions.width, framebuffer_dimensions.height);
+    glfwGetFramebufferSize(g_window_subsystem.window,
+                           &framebuffer_dimensions.width,
+                           &framebuffer_dimensions.height);
+    glViewport(0, 0, framebuffer_dimensions.width,
+               framebuffer_dimensions.height);
 
     g_window_subsystem.initialized = true;
     return outcome::CreateError(WindowErrorCode::kOk);
@@ -92,14 +104,34 @@ void WindowDeinit() {
     LOG_INFO("Window subsystem deinitialized");
 }
 
-bool WindowShouldClose() { return glfwWindowShouldClose(g_window_subsystem.window); }
+bool WindowShouldClose() {
+    ASSERT_MSG(g_window_subsystem.initialized,
+               "Window subsystem not initialized");
+    return glfwWindowShouldClose(g_window_subsystem.window);
+}
 
-void WindowPollEvents() { glfwPollEvents(); };
+void WindowPollEvents() {
+    ASSERT_MSG(g_window_subsystem.initialized,
+               "Window subsystem not initialized");
+    glfwPollEvents();
+};
 
-void WindowSwapBuffers() { glfwSwapBuffers(g_window_subsystem.window); }
+void WindowSwapBuffers() {
+    ASSERT_MSG(g_window_subsystem.initialized,
+               "Window subsystem not initialized");
+    glfwSwapBuffers(g_window_subsystem.window);
+}
 
-math::Dimensions<int> WindowGetDimensions() { return g_window_subsystem.dimensions; }
+math::Dimensions<int> WindowGetDimensions() {
+    ASSERT_MSG(g_window_subsystem.initialized,
+               "Window subsystem not initialized");
+    return g_window_subsystem.dimensions;
+}
 
-std::string WindowGetTitle() { return g_window_subsystem.title; }
+std::string WindowGetTitle() {
+    ASSERT_MSG(g_window_subsystem.initialized,
+               "Window subsystem not initialized");
+    return g_window_subsystem.title;
+}
 
 }  // namespace nx::sys
