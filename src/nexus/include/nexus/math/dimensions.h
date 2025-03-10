@@ -4,6 +4,11 @@
 
 namespace nx::math {
 
+/**
+ * @brief Represents a two-dimensional size.
+ *
+ * @tparam T The type of the dimensions.
+ */
 template <typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
 struct Dimensions {
     T width {};

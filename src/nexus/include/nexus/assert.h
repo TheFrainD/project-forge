@@ -20,20 +20,20 @@
 #define DEBUG_BREAK() raise(SIGTRAP)
 #endif
 
-#define ASSERT(expr)                                                      \
-    if (expr) {                                                           \
-    } else {                                                              \
-        LOG_CRITICAL("[{}:{}] Assertion failed: {}.", __FILE__, __LINE__, \
-                     #expr);                                              \
-        DEBUG_BREAK();                                                    \
-    }
-
-#define ASSERT_MSG(expr, msg)                                                \
+#define NX_ASSERT(expr)                                                      \
     if (expr) {                                                              \
     } else {                                                                 \
-        LOG_CRITICAL("[{}:{}] Assertion failed: {}. {}", __FILE__, __LINE__, \
-                     #expr, msg);                                            \
+        NX_LOG_CRITICAL("[{}:{}] Assertion failed: {}.", __FILE__, __LINE__, \
+                        #expr);                                              \
         DEBUG_BREAK();                                                       \
+    }
+
+#define NX_ASSERT_MSG(expr, msg)                                      \
+    if (expr) {                                                       \
+    } else {                                                          \
+        NX_LOG_CRITICAL("[{}:{}] Assertion failed: {}. {}", __FILE__, \
+                        __LINE__, #expr, msg);                        \
+        DEBUG_BREAK();                                                \
     }
 
 #else

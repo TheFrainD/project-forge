@@ -1,7 +1,10 @@
-#include <iostream>
+#include <nexus/graphics/buffer.h>
+#include <nexus/sys/log.h>
+#include <nexus/sys/window.h>
 
-#include "nexus/sys/log.h"
-#include "nexus/sys/window.h"
+#include <iostream>
+#include <memory>
+#include <vector>
 
 int main(int, char *[]) {
     if (const auto error = nx::sys::LoggerInit("forge", "forge.log");
@@ -25,29 +28,45 @@ int main(int, char *[]) {
     if (const auto error = nx::sys::WindowInit(settings); !error.IsOk()) {
         switch (error.GetCode<nx::sys::WindowErrorCode>()) {
             case nx::sys::WindowErrorCode::kAlreadyInitialized:
-                LOG_ERROR("Window subsystem already initialized");
+                NX_LOG_ERROR("Window subsystem already initialized");
                 break;
             case nx::sys::WindowErrorCode::kFailedToInitializeGLFW:
-                LOG_ERROR("Failed to initialize GLFW");
+                NX_LOG_ERROR("Failed to initialize GLFW");
                 break;
             case nx::sys::WindowErrorCode::kFailedToCreateGLFWWindow:
-                LOG_ERROR("Failed to create GLFW window");
+                NX_LOG_ERROR("Failed to create GLFW window");
                 break;
             case nx::sys::WindowErrorCode::kFailedToInitializeGLAD:
-                LOG_ERROR("Failed to initialize GLAD");
+                NX_LOG_ERROR("Failed to initialize GLAD");
                 break;
             default:
-                LOG_ERROR("Unknown error");
+                NX_LOG_ERROR("Unknown error");
                 break;
         }
         return 1;
     }
 
+    auto buffer_outcome = nx::graphics::Buffer::Create(
+        nx::graphics::Buffer::Usage::kStaticDraw,
+        nx::graphics::Buffer::Target::kArrayBuffer, 0);
+    std::unique_ptr<nx::graphics::Buffer> buffer;
+    if (buffer_outcome.IsOk()) {
+        const std::vector<float> test_data = {0.0f, 1.0f, 2.0f,
+                                              3.0f, 4.0f, 5.0f};
+
+        buffer = std::make_unique<nx::graphics::Buffer>(
+            std::move(buffer_outcome.GetValue()));
+        buffer->SetData(test_data.size() * sizeof(float), test_data.data());
+    }
+
     while (!nx::sys::WindowShouldClose()) {
         nx::sys::WindowPollEvents();
         nx::sys::WindowSwapBuffers();
+
+        buffer->Bind();
     }
 
+    buffer->Release();
     nx::sys::WindowDeinit();
     return 0;
 }

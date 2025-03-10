@@ -19,15 +19,15 @@ struct WindowSubsystem {
 static WindowSubsystem g_window_subsystem;
 
 outcome::Error WindowInit(const WindowSettings &settings) {
-    ASSERT_MSG(g_window_subsystem.initialized == false,
-               "Window subsystem already initialized");
+    NX_ASSERT_MSG(g_window_subsystem.initialized == false,
+                  "Window subsystem already initialized");
 
     if (g_window_subsystem.initialized) {
         return outcome::CreateError(WindowErrorCode::kAlreadyInitialized);
     }
 
     glfwSetErrorCallback([](int error, const char *description) {
-        LOG_ERROR("GLFW error: {} - {}", error, description);
+        NX_LOG_ERROR("GLFW error: {} - {}", error, description);
     });
 
     if (!glfwInit()) {
@@ -100,37 +100,35 @@ void WindowDeinit() {
     if (g_window_subsystem.initialized) {
         glfwTerminate();
     }
-
-    LOG_INFO("Window subsystem deinitialized");
 }
 
 bool WindowShouldClose() {
-    ASSERT_MSG(g_window_subsystem.initialized,
-               "Window subsystem not initialized");
+    NX_ASSERT_MSG(g_window_subsystem.initialized,
+                  "Window subsystem not initialized");
     return glfwWindowShouldClose(g_window_subsystem.window);
 }
 
 void WindowPollEvents() {
-    ASSERT_MSG(g_window_subsystem.initialized,
-               "Window subsystem not initialized");
+    NX_ASSERT_MSG(g_window_subsystem.initialized,
+                  "Window subsystem not initialized");
     glfwPollEvents();
 };
 
 void WindowSwapBuffers() {
-    ASSERT_MSG(g_window_subsystem.initialized,
-               "Window subsystem not initialized");
+    NX_ASSERT_MSG(g_window_subsystem.initialized,
+                  "Window subsystem not initialized");
     glfwSwapBuffers(g_window_subsystem.window);
 }
 
 math::Dimensions<int> WindowGetDimensions() {
-    ASSERT_MSG(g_window_subsystem.initialized,
-               "Window subsystem not initialized");
+    NX_ASSERT_MSG(g_window_subsystem.initialized,
+                  "Window subsystem not initialized");
     return g_window_subsystem.dimensions;
 }
 
 std::string WindowGetTitle() {
-    ASSERT_MSG(g_window_subsystem.initialized,
-               "Window subsystem not initialized");
+    NX_ASSERT_MSG(g_window_subsystem.initialized,
+                  "Window subsystem not initialized");
     return g_window_subsystem.title;
 }
 
