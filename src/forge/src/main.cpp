@@ -51,8 +51,7 @@ int main(int, char *[]) {
         nx::graphics::Buffer::Target::kArrayBuffer, 0);
     std::unique_ptr<nx::graphics::Buffer> buffer;
     if (buffer_outcome.IsOk()) {
-        const std::vector<float> test_data = {0.0f, 1.0f, 2.0f,
-                                              3.0f, 4.0f, 5.0f};
+        const std::vector test_data = {0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f};
 
         buffer = std::make_unique<nx::graphics::Buffer>(
             std::move(buffer_outcome.GetValue()));

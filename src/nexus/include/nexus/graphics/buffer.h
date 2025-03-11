@@ -47,9 +47,11 @@ public:
      * @param size The size of the buffer in bytes.
      * @param data A pointer to the data to be set. If nullptr, the buffer is
      * allocated but not initialized.
+     * @return An outcome with either buffer or error.
      */
-    static outcome::Outcome<Buffer, outcome::Error> Create(
-        Usage usage, Target target, size_t size, const void *data = nullptr);
+    static outcome::Outcome<Buffer> Create(Usage usage, Target target,
+                                           size_t size,
+                                           const void *data = nullptr);
 
     /**
      * @brief Sets the data for the buffer.

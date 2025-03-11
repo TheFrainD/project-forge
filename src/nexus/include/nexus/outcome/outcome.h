@@ -13,7 +13,7 @@ namespace nx::outcome {
  * @tparam T The type of the value.
  * @tparam E The type of the error.
  */
-template <typename T, typename E>
+template <typename T, typename E = Error>
 class Outcome {
 public:
     explicit Outcome(const T &data) : data_(data) {}
@@ -90,7 +90,7 @@ private:
  * @param value The value.
  * @return The outcome.
  */
-template <typename T, typename E>
+template <typename T, typename E = Error>
 Outcome<T, E> Ok(T value) {
     return Outcome<T, E>(std::move(value));
 }
@@ -103,16 +103,9 @@ Outcome<T, E> Ok(T value) {
  * @param error The error.
  * @return The outcome.
  */
-template <typename T, typename E>
+template <typename T, typename E = Error>
 Outcome<T, E> Err(E error) {
     return Outcome<T, E>(std::move(error));
 }
-
-/**
- * @brief Represents an outcome with a default error type.
- *
- * @tparam T The type of the value.
- */
-using DefaultOutcome = Outcome<void, Error>;
 
 }  // namespace nx::outcome

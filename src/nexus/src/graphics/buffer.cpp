@@ -31,10 +31,8 @@ Buffer &Buffer::operator=(Buffer &&other) noexcept {
     return *this;
 }
 
-outcome::Outcome<Buffer, outcome::Error> Buffer::Create(const Usage usage,
-                                                        const Target target,
-                                                        const size_t size,
-                                                        const void *data) {
+outcome::Outcome<Buffer> Buffer::Create(const Usage usage, const Target target,
+                                        const size_t size, const void *data) {
     uint32_t id = 0;
     glGenBuffers(1, &id);
     if (id == 0) {
@@ -47,7 +45,7 @@ outcome::Outcome<Buffer, outcome::Error> Buffer::Create(const Usage usage,
     Buffer buffer(id, usage, target, size);
     buffer.SetData(size, data);
 
-    return outcome::Ok<Buffer, outcome::Error>(std::move(buffer));
+    return outcome::Ok<Buffer>(std::move(buffer));
 }
 
 void Buffer::SetData(const size_t size, const void *data) {
@@ -69,7 +67,8 @@ void Buffer::SetSubData(const size_t offset, const size_t size,
     }
 
     Bind();
-    glBufferSubData(static_cast<GLenum>(target_), offset, size, data);
+    glBufferSubData(static_cast<GLenum>(target_), static_cast<GLintptr>(offset),
+                    static_cast<GLsizeiptr>(size), data);
     Unbind();
 }
 
@@ -87,9 +86,9 @@ void Buffer::BindRange(const uint32_t binding_point, const size_t size) {
     }
 
     glBindBufferRange(static_cast<GLenum>(target_), binding_point, id_, 0,
-                      size);
+                      static_cast<GLsizei>(size));
 }
-void Buffer::BindBase(uint32_t binding_point) {
+void Buffer::BindBase(const uint32_t binding_point) {
     NX_ASSERT(id_ != 0);
     glBindBufferBase(static_cast<GLenum>(target_), binding_point, id_);
 }
