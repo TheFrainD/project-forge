@@ -104,9 +104,8 @@ Buffer::Buffer(const uint32_t id, const Usage usage, const Target target,
 
 void Buffer::Release() {
     if (id_ != 0) {
-        NX_LOG_DEBUG("Releasing buffer with id: {}", id_);
-
         glDeleteBuffers(1, &id_);
+        NX_LOG_DEBUG("Deleted buffer with id: {}", id_);
         id_     = 0;
         size_   = 0;
         usage_  = Usage::kNone;

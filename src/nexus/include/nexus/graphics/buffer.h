@@ -49,9 +49,8 @@ public:
      * allocated but not initialized.
      * @return An outcome with either buffer or error.
      */
-    static outcome::Outcome<Buffer> Create(Usage usage, Target target,
-                                           size_t size,
-                                           const void *data = nullptr);
+    [[nodiscard]] static outcome::Outcome<Buffer> Create(
+        Usage usage, Target target, size_t size, const void *data = nullptr);
 
     /**
      * @brief Sets the data for the buffer.

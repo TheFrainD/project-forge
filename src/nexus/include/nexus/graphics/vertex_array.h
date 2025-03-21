@@ -34,7 +34,7 @@ public:
      *
      * @return An outcome with either vertex array or error.
      */
-    static outcome::Outcome<VertexArray> Create();
+    [[nodiscard]] static outcome::Outcome<VertexArray> Create();
 
     /**
      * @brief Binds the vertex array.

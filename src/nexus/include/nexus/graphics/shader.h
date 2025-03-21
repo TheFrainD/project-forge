@@ -36,11 +36,18 @@ public:
      * @param source The source code of the shader.
      * @return An outcome with either shader or error.
      */
-    static outcome::Outcome<Shader> Create(Type type,
-                                           const std::string &source);
+    [[nodiscard]] static outcome::Outcome<Shader> Create(
+        Type type, const std::string &source);
 
-    uint32_t GetId() const;
+    /**
+     * @brief Returns the id of the shader.
+     * @return The id of the shader.
+     */
+    [[nodiscard]] uint32_t GetId() const;
 
+    /**
+     * @brief Releases the shader.
+     */
     void Release();
 
 private:
